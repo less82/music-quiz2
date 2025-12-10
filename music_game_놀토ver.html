@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nolto Music Quiz</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Gowun+Dodum&family=Jua&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* [테마] 놀라운 토요일 레트로 우드 스타일 */
+        :root {
+            --wood-dark: #3e2723;
+            --wood-light: #5d4037;
+            --nolto-orange: #ff6f00;
+            --nolto-yellow: #ffca28;
+            --nolto-bg: #8d6e63;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            /* 우드 패턴 배경 (CSS로 구현) */
+            background-color: var(--wood-dark);
+            background-image:
+                repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(0, 0, 0, 0.1) 50px, rgba(0, 0, 0, 0.1) 53px),
+                linear-gradient(to bottom, rgba(0, 0, 0, 0.2), transparent);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Jua', sans-serif;
+            /* 둥글둥글한 예능 자막 폰트 */
+            color: #fff;
+        }
+
+        /* 유튜브 플레이어 숨김 */
+        #hidden-player-wrapper {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* 시스템 상태 표시 */
+        #system-status {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            font-size: 16px;
+            color: #ffcc80;
+            z-index: 100;
+            font-family: 'Do Hyeon', sans-serif;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        /* 슬라이드 컨테이너 */
+        .slide-container {
+            width: 95vw;
+            aspect-ratio: 16 / 9;
+            max-height: 95vh;
+            background: #5d4037;
+            /* 밝은 나무색 */
+            border: 15px solid #3e2723;
+            /* 진한 나무 테두리 */
+            border-radius: 20px;
+            box-shadow:
+                inset 0 0 50px rgba(0, 0, 0, 0.6),
+                0 20px 50px rgba(0, 0, 0, 0.8);
+            position: relative;
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
+            padding: 2vw;
+        }
+
+        .slide-container.active {
+            display: flex;
+            animation: bounceIn 0.5s;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            70% {
+                transform: scale(1.02);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* [타이틀 화면] 방송 로고 스타일 */
+        .title-content {
+            text-align: center;
+            margin: auto;
+            background: url('https://www.transparenttextures.com/patterns/black-scales.png'), radial-gradient(circle, #ffca28 0%, #ff6f00 100%);
+            padding: 60px;
+            border-radius: 50%;
+            /* 원형 로고 느낌 */
+            border: 8px solid #fff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 60vh;
+            height: 60vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .title-text {
+            font-family: 'Black Han Sans', sans-serif;
+            font-size: 5vw;
+            color: #fff;
+            text-shadow:
+                3px 3px 0 #3e2723,
+                -1px -1px 0 #3e2723,
+                1px -1px 0 #3e2723,
+                -1px 1px 0 #3e2723,
+                1px 1px 0 #3e2723;
+            line-height: 1.1;
+            transform: rotate(-5deg);
+        }
+
+        /* [점수판] 칠판/종이 느낌 */
+        .board-wrapper {
+            background: #fff8e1;
+            /* 종이 색상 */
+            border-radius: 10px;
+            padding: 10px;
+            height: 100%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            border: 2px solid #d7ccc8;
+        }
+
+        .board-header {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 10px;
+            height: 10%;
+        }
+
+        .category-title {
+            background: #3e2723;
+            color: #ffca28;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            font-size: 1.8vw;
+            font-family: 'Black Han Sans', sans-serif;
+            border: 2px dashed #ffca28;
+            box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .board-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            flex-grow: 1;
+        }
+
+        .score-column {
+            display: grid;
+            grid-template-rows: repeat(5, 1fr);
+            gap: 10px;
+        }
+
+        /* [포스트잇 버튼 스타일] */
+        .score-btn {
+            background: #ffb74d;
+            /* 포스트잇 주황색 */
+            color: #3e2723;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3vw;
+            font-family: 'Do Hyeon', sans-serif;
+            text-decoration: none;
+            box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
+            transform: rotate(-1deg);
+            /* 살짝 비뚤게 */
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        /* 포스트잇 접힌 효과 */
+        .score-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            border-width: 0 0 20px 20px;
+            border-style: solid;
+            border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+        }
+
+        .score-btn:hover {
+            background: #ffa726;
+            transform: scale(1.05) rotate(0deg) translateY(-2px);
+            z-index: 10;
+        }
+
+        /* 떼어낸 포스트잇 (해결됨) */
+        .score-btn.solved {
+            background: transparent;
+            box-shadow: none;
+            border: 2px dashed #d7ccc8;
+            color: #d7ccc8;
+            pointer-events: none;
+            transform: none;
+        }
+
+        /* [문제 화면] */
+        .question-layout {
+            display: flex;
+            gap: 2vw;
+            height: 100%;
+            width: 100%;
+        }
+
+        /* 왼쪽 패널 (컨트롤러) */
+        .left-panel {
+            flex: 0.8;
+            background: #3e2723;
+            /* 칠판 색상 */
+            border: 8px solid #8d6e63;
+            border-radius: 15px;
+            padding: 2vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .q-header {
+            color: #fff;
+            border-bottom: 2px dashed #a1887f;
+            padding-bottom: 15px;
+        }
+
+        .audio-wrapper {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.5vw;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .play-btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .time-btn {
+            background: #fff;
+            color: #3e2723;
+            border: none;
+            padding: 10px 0;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.5vw;
+            font-family: 'Black Han Sans';
+            box-shadow: 0 4px 0 #a1887f;
+            transition: 0.1s;
+        }
+
+        .time-btn:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        .highlight-btn {
+            background: #ff6f00;
+            color: white;
+            /* 놀토 오렌지 */
+            box-shadow: 0 4px 0 #e65100;
+        }
+
+        .stop-btn {
+            background: #d32f2f;
+            color: white;
+            margin-top: 10px;
+            width: 100%;
+            box-shadow: 0 4px 0 #b71c1c;
+        }
+
+        .status-text {
+            color: #ffd54f;
+            font-size: 1.3vw;
+            margin-bottom: 5px;
+            height: 1.5em;
+        }
+
+        /* 오른쪽 패널 (정답 영역) */
+        .right-panel {
+            flex: 1.2;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: radial-gradient(#fff8e1 10%, transparent 11%), radial-gradient(#fff8e1 10%, transparent 11%);
+            background-size: 20px 20px;
+            background-color: #8d6e63;
+            border: 8px solid #5d4037;
+            border-radius: 15px;
+        }
+
+        .post-it-hint {
+            width: 70%;
+            aspect-ratio: 1/1;
+            background: #ffecb3;
+            /* 밝은 노란색 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 3vw;
+            font-family: 'Black Han Sans';
+            color: #3e2723;
+            box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.3);
+            transform: rotate(-3deg);
+            cursor: pointer;
+            position: absolute;
+            z-index: 20;
+            transition: all 0.5s ease-in-out;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .post-it-hint::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 35px;
+            background: rgba(255, 255, 255, 0.4);
+            /* 테이프 느낌 */
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .post-it-hint.removed {
+            transform: translateY(150%) rotate(45deg);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .answer-reveal {
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.5s 0.3s;
+            width: 100%;
+            z-index: 10;
+        }
+
+        .post-it-hint.removed+.answer-reveal {
+            opacity: 1;
+        }
+
+        .song-title {
+            font-size: 4.5vw;
+            color: #ffca28;
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 0 #3e2723;
+            font-family: 'Black Han Sans';
+        }
+
+        .artist-name {
+            font-size: 2.5vw;
+            color: #fff;
+            text-shadow: 2px 2px 0 #3e2723;
+        }
+
+        /* 공통 버튼 */
+        .nav-btn {
+            background: #5d4037;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 1.2vw;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            border: 2px solid #a1887f;
+        }
+
+        .nav-btn:hover {
+            background: #6d4c41;
+        }
+
+        .reset-btn {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #3e2723;
+            cursor: pointer;
+            font-family: 'Do Hyeon';
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 시스템 상태 표시 -->
+    <div id="system-status">🟡 플레이어 로딩 중...</div>
+
+    <!-- 유튜브 플레이어 -->
+    <div id="hidden-player-wrapper">
+        <div id="yt-player"></div>
+    </div>
+
+    <!-- 1. 타이틀 슬라이드 -->
+    <div class="slide-container active" id="title">
+        <div class="title-content">
+            <div class="title-text">
+                <span style="font-size: 3vw; color: #ffca28;">가족오락관</span><br>
+                음악 장학퀴즈
+            </div>
+            <div style="margin-top: 40px;">
+                <a href="#board" class="nav-btn" style="background: #ff6f00; border-color: #ff6f00; font-size: 1.5vw;">
+                    <i class="fa-solid fa-play"></i> 게임 시작하기
+                </a>
+            </div>
+            <p style="margin-top: 20px; color: #fff; font-size: 1rem;">* 소리가 안 나면 볼륨을 키워주세요</p>
+        </div>
+    </div>
+
+    <!-- 2. 게임 보드 슬라이드 -->
+    <div class="slide-container" id="board">
+        <div class="board-wrapper">
+            <div class="board-header">
+                <div class="category-title">전국민 떼창곡</div>
+                <div class="category-title">요즘 애들 (1020)</div>
+                <div class="category-title">라떼는 (8090)</div>
+                <div class="category-title">드라마 OST</div>
+                <div class="category-title">흥 폭발</div>
+            </div>
+            <div class="board-grid" id="score-board-grid"></div>
+        </div>
+        <button onclick="resetGame()" class="reset-btn"><i class="fa-solid fa-rotate-right"></i> 전체 초기화</button>
+    </div>
+
+    <!-- JS가 문제 슬라이드 생성 -->
+
+    <script>
+        // =========================================================================
+        // ★ 데이터 영역 (전주 & 하이라이트 분리) ★
+        // =========================================================================
+        // introTime: 0 (전주부터 시작)
+        // highlightTime: 후렴구/클라이막스 시작 시간(초) - *직접 수정 필요*
+
+        const quizData = {
+            1: {
+                category: "전국민 떼창곡", questions: {
+                    10: { title: "아모르 파티", artist: "김연자", hint: "연애는 필수...", type: "전주 1초", youtubeId: "pD39o3tRq78", introTime: 0, highlightTime: 60 },
+                    20: { title: "붉은 노을", artist: "이문세", hint: "난 너를 사랑해~", type: "전주 1초", youtubeId: "h-g8r7R8j4E", introTime: 0, highlightTime: 67 },
+                    30: { title: "여행을 떠나요", artist: "조용필", hint: "메아리 소리가...", type: "전주 3초", youtubeId: "Qp0_Z8sUqT4", introTime: 0, highlightTime: 45 },
+                    40: { title: "잘못된 만남", artist: "김건모", hint: "빠른 랩", type: "전주 0.5초", youtubeId: "lE7K_sP19n4", introTime: 0, highlightTime: 82 },
+                    50: { title: "아파트", artist: "윤수일", hint: "으샤라 으샤", type: "전주 0.5초", youtubeId: "4S1M1Dq4dGM", introTime: 0, highlightTime: 50 }
+                }
+            },
+            2: {
+                category: "요즘 애들", questions: {
+                    10: { title: "Dynamite", artist: "BTS", hint: "영어 가사", type: "전주 1초", youtubeId: "gdZLi9oWNZg", introTime: 0, highlightTime: 50 },
+                    20: { title: "Love Dive", artist: "IVE", hint: "숨 참고...", type: "전주 1초", youtubeId: "Y8JFxS1HlDo", introTime: 0, highlightTime: 35 },
+                    30: { title: "으르렁", artist: "EXO", hint: "교복, 늑대", type: "전주 3초", youtubeId: "I3dezFzsNss", introTime: 0, highlightTime: 65 },
+                    40: { title: "Ditto", artist: "뉴진스", hint: "허밍", type: "전주 1초", youtubeId: "Km71Rr9K-Bw", introTime: 0, highlightTime: 55 },
+                    50: { title: "Next Level", artist: "에스파", hint: "ㄷ자 춤", type: "전주 0.5초", youtubeId: "4TWR90KJl84", introTime: 0, highlightTime: 60 }
+                }
+            },
+            3: {
+                category: "라떼는 (8090)", questions: {
+                    10: { title: "남행열차", artist: "김수희", hint: "비 내리는...", type: "전주 1초", youtubeId: "sxzD5sX4Ww0", introTime: 0, highlightTime: 40 },
+                    20: { title: "꿍따리 샤바라", artist: "클론", hint: "여름", type: "전주 1초", youtubeId: "K1sT3m3p8lM", introTime: 0, highlightTime: 55 },
+                    30: { title: "담다디", artist: "이상은", hint: "키다리 아저씨", type: "전주 2초", youtubeId: "B7hKk0kQGkE", introTime: 0, highlightTime: 45 },
+                    40: { title: "어쩌다 마주친 그대", artist: "송골매", hint: "강렬한 기타", type: "전주 1초", youtubeId: "7O7iQyFpYkY", introTime: 0, highlightTime: 30 },
+                    50: { title: "그대에게", artist: "무한궤도", hint: "대학가요제", type: "전주 1초", youtubeId: "Y50Q8H1bE_4", introTime: 23, highlightTime: 155 } // 그대에게는 전주가 김
+                }
+            },
+            4: {
+                category: "방구석 1열", questions: {
+                    10: { title: "Let It Go", artist: "겨울왕국", hint: "엘사", type: "전주 1초", youtubeId: "L0MK7qz13bU", introTime: 0, highlightTime: 125 },
+                    20: { title: "My Destiny", artist: "별그대", hint: "도민준", type: "전주 1초", youtubeId: "D07Q2k04uCU", introTime: 0, highlightTime: 60 },
+                    30: { title: "걱정말아요 그대", artist: "이적", hint: "지나간 것은...", type: "전주 3초", youtubeId: "Dic27EnDDls", introTime: 0, highlightTime: 190 },
+                    40: { title: "We All Lie", artist: "SKY 캐슬", hint: "전적으로...", type: "전주 1초", youtubeId: "A38M25f4kFk", introTime: 0, highlightTime: 65 },
+                    50: { title: "야인", artist: "야인시대", hint: "4딸라", type: "전주 1초", youtubeId: "N1S6G7xGqQo", introTime: 0, highlightTime: 55 }
+                }
+            },
+            5: {
+                category: "흥 폭발", questions: {
+                    10: { title: "무조건", artist: "박상철", hint: "짜짜라...", type: "전주 1초", youtubeId: "vL7NlDoYmTU", introTime: 0, highlightTime: 50 },
+                    20: { title: "찐이야", artist: "영탁", hint: "엄지 척", type: "전주 1초", youtubeId: "pCsi5XF1cKQ", introTime: 0, highlightTime: 58 },
+                    30: { title: "DOC와 춤을", artist: "DJ DOC", hint: "관광버스", type: "전주 3초", youtubeId: "c2GgP0z_qQM", introTime: 0, highlightTime: 60 },
+                    40: { title: "사랑의 배터리", artist: "홍진영", hint: "당신이 짱", type: "전주 0.5초", youtubeId: "sS_x1F7X2tE", introTime: 0, highlightTime: 45 },
+                    50: { title: "테스형!", artist: "나훈아", hint: "세상이 왜 이래", type: "전주 0.5초", youtubeId: "dZ7zVpC3YwE", introTime: 0, highlightTime: 70 }
+                }
+            }
+        };
+
+        // =========================================================================
+        // 유튜브 로직
+        // =========================================================================
+        var player;
+        var isPlayerReady = false;
+        var currentTimer = null;
+
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('yt-player', {
+                height: '10', width: '10',
+                playerVars: { 'playsinline': 1, 'controls': 0 },
+                events: { 'onReady': onPlayerReady }
+            });
+        }
+
+        function onPlayerReady(event) {
+            isPlayerReady = true;
+            const statusEl = document.getElementById('system-status');
+            if (statusEl) {
+                statusEl.innerText = "🟢 준비 완료! (소리를 켜주세요)";
+                statusEl.style.color = "#b2dfdb";
+            }
+        }
+
+        function playSnippet(youtubeId, startTime, duration, statusId) {
+            if (!isPlayerReady) { alert("플레이어 로딩 중입니다. 잠시만요!"); return; }
+
+            const statusEl = document.getElementById(statusId);
+            if (statusEl) statusEl.innerText = (duration === 'full' ? "하이라이트 재생 중!" : duration + "초 듣기 중...");
+
+            stopVideo(statusId, false); // 텍스트 초기화 안 함
+
+            player.loadVideoById({ videoId: youtubeId, startSeconds: startTime });
+            setTimeout(() => { player.playVideo(); }, 100);
+
+            if (duration !== 'full') {
+                currentTimer = setTimeout(() => {
+                    player.pauseVideo();
+                    if (statusEl) statusEl.innerText = "시간 종료!";
+                }, duration * 1000);
+            }
+        }
+
+        function stopVideo(statusId, clearText = true) {
+            if (currentTimer) { clearTimeout(currentTimer); currentTimer = null; }
+            if (player && isPlayerReady) player.pauseVideo();
+
+            if (clearText && statusId) {
+                const statusEl = document.getElementById(statusId);
+                if (statusEl) statusEl.innerText = "";
+            }
+        }
+
+        // =========================================================================
+        // UI 생성
+        // =========================================================================
+        document.addEventListener("DOMContentLoaded", () => {
+            generateBoard();
+            generateQuestionSlides();
+            loadBoardState();
+            handleNavigation();
+        });
+
+        window.addEventListener('hashchange', handleNavigation);
+
+        function handleNavigation() {
+            const hash = window.location.hash || '#title';
+            const targetId = hash.substring(1);
+            stopVideo();
+            document.querySelectorAll('.slide-container').forEach(slide => slide.classList.remove('active'));
+            const targetSlide = document.getElementById(targetId) || document.getElementById('title');
+            targetSlide.classList.add('active');
+        }
+
+        function generateBoard() {
+            const grid = document.getElementById('score-board-grid');
+            for (let col = 1; col <= 5; col++) {
+                const colDiv = document.createElement('div');
+                colDiv.className = 'score-column';
+                for (let score = 10; score <= 50; score += 10) {
+                    const btn = document.createElement('a');
+                    btn.className = 'score-btn';
+                    btn.id = `btn-${col}-${score}`;
+                    btn.href = `#q-${col}-${score}`;
+                    btn.innerText = score;
+                    btn.onclick = () => markSolved(`btn-${col}-${score}`);
+                    colDiv.appendChild(btn);
+                }
+                grid.appendChild(colDiv);
+            }
+        }
+
+        function generateQuestionSlides() {
+            for (let col = 1; col <= 5; col++) {
+                for (let score = 10; score <= 50; score += 10) {
+                    const data = quizData[col].questions[score];
+                    if (!data) continue;
+
+                    const slide = document.createElement('div');
+                    slide.className = 'slide-container';
+                    slide.id = `q-${col}-${score}`;
+                    const statusId = `status-${col}-${score}`;
+
+                    // IntroTime과 HighlightTime이 없으면 기본값 처리
+                    const intro = data.introTime !== undefined ? data.introTime : 0;
+                    const highlight = data.highlightTime !== undefined ? data.highlightTime : 60;
+
+                    slide.innerHTML = `
+                    <div class="question-layout">
+                        <div class="left-panel">
+                            <div>
+                                <h2 class="q-header">${quizData[col].category} <span style="font-size:0.7em; color:#ffcc80;">(${score}점)</span></h2>
+                                <div class="audio-wrapper">
+                                    <div id="${statusId}" class="status-text"></div>
+                                    
+                                    <p style="margin:5px 0; color:#bcaaa4; font-size:1.2vw;">[전주 듣기]</p>
+                                    <div class="play-btn-grid" style="margin-top:5px;">
+                                        <button class="time-btn" onclick="playSnippet('${data.youtubeId}', ${intro}, 0.5, '${statusId}')">0.5초</button>
+                                        <button class="time-btn" onclick="playSnippet('${data.youtubeId}', ${intro}, 1, '${statusId}')">1초</button>
+                                        <button class="time-btn" onclick="playSnippet('${data.youtubeId}', ${intro}, 3, '${statusId}')">3초</button>
+                                    </div>
+
+                                    <div style="margin-top:20px;">
+                                        <button class="time-btn highlight-btn" style="width:100%;" onclick="playSnippet('${data.youtubeId}', ${highlight}, 'full', '${statusId}')">
+                                            <i class="fa-solid fa-star"></i> 하이라이트 재생
+                                        </button>
+                                        <button class="time-btn stop-btn" onclick="stopVideo('${statusId}')">정지</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <a href="#board" class="nav-btn" onclick="loadBoardState()">
+                                    <i class="fa-solid fa-list"></i> 목록으로
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="right-panel">
+                            <div class="post-it-hint" onclick="removePostIt(this)">
+                                <div style="font-size: 1.5vw; color: #5d4037; margin-bottom: 10px;">HINT</div>
+                                <div>${data.hint}</div>
+                            </div>
+
+                            <div class="answer-reveal">
+                                <div class="song-title">${data.title}</div>
+                                <div class="artist-name">${data.artist}</div>
+                                <div style="margin-top: 30px; font-size: 5vw; color: #ffca28;">
+                                    <i class="fa-solid fa-music fa-bounce"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                    document.body.appendChild(slide);
+                }
+            }
+        }
+
+        function markSolved(id) { sessionStorage.setItem(id, 'solved'); }
+        function loadBoardState() {
+            document.querySelectorAll('.score-btn').forEach(btn => {
+                if (sessionStorage.getItem(btn.id) === 'solved') btn.classList.add('solved');
+            });
+        }
+        function removePostIt(el) { el.classList.add('removed'); }
+        function resetGame() { if (confirm('초기화 하시겠습니까?')) { sessionStorage.clear(); location.reload(); } }
+    </script>
+
+</body>
+
+</html>
