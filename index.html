@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nolto Music Quiz</title>
     <link
-        href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Gowun+Dodum&family=Jua&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Gamja+Flower&family=Jua&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -24,7 +24,7 @@
         }
 
         body {
-            /* 우드 패턴 배경 (CSS로 구현) */
+            /* 우드 패턴 배경 */
             background-color: var(--wood-dark);
             background-image:
                 repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(0, 0, 0, 0.1) 50px, rgba(0, 0, 0, 0.1) 53px),
@@ -37,7 +37,6 @@
             height: 100vh;
             overflow: hidden;
             font-family: 'Jua', sans-serif;
-            /* 둥글둥글한 예능 자막 폰트 */
             color: #fff;
         }
 
@@ -71,13 +70,9 @@
             aspect-ratio: 16 / 9;
             max-height: 95vh;
             background: #5d4037;
-            /* 밝은 나무색 */
             border: 15px solid #3e2723;
-            /* 진한 나무 테두리 */
             border-radius: 20px;
-            box-shadow:
-                inset 0 0 50px rgba(0, 0, 0, 0.6),
-                0 20px 50px rgba(0, 0, 0, 0.8);
+            box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.6), 0 20px 50px rgba(0, 0, 0, 0.8);
             position: relative;
             overflow: hidden;
             display: none;
@@ -106,14 +101,13 @@
             }
         }
 
-        /* [타이틀 화면] 방송 로고 스타일 */
+        /* [타이틀 화면] */
         .title-content {
             text-align: center;
             margin: auto;
             background: url('https://www.transparenttextures.com/patterns/black-scales.png'), radial-gradient(circle, #ffca28 0%, #ff6f00 100%);
             padding: 60px;
             border-radius: 50%;
-            /* 원형 로고 느낌 */
             border: 8px solid #fff;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             width: 60vh;
@@ -128,20 +122,14 @@
             font-family: 'Black Han Sans', sans-serif;
             font-size: 5vw;
             color: #fff;
-            text-shadow:
-                3px 3px 0 #3e2723,
-                -1px -1px 0 #3e2723,
-                1px -1px 0 #3e2723,
-                -1px 1px 0 #3e2723,
-                1px 1px 0 #3e2723;
+            text-shadow: 3px 3px 0 #3e2723, -1px -1px 0 #3e2723, 1px -1px 0 #3e2723, -1px 1px 0 #3e2723, 1px 1px 0 #3e2723;
             line-height: 1.1;
             transform: rotate(-5deg);
         }
 
-        /* [점수판] 칠판/종이 느낌 */
+        /* [점수판] */
         .board-wrapper {
             background: #fff8e1;
-            /* 종이 색상 */
             border-radius: 10px;
             padding: 10px;
             height: 100%;
@@ -185,10 +173,9 @@
             gap: 10px;
         }
 
-        /* [포스트잇 버튼 스타일] */
+        /* [포스트잇 버튼] */
         .score-btn {
             background: #ffb74d;
-            /* 포스트잇 주황색 */
             color: #3e2723;
             display: flex;
             justify-content: center;
@@ -198,12 +185,10 @@
             text-decoration: none;
             box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
             transform: rotate(-1deg);
-            /* 살짝 비뚤게 */
             transition: all 0.2s;
             position: relative;
         }
 
-        /* 포스트잇 접힌 효과 */
         .score-btn::after {
             content: '';
             position: absolute;
@@ -220,7 +205,6 @@
             z-index: 10;
         }
 
-        /* 떼어낸 포스트잇 (해결됨) */
         .score-btn.solved {
             background: transparent;
             box-shadow: none;
@@ -238,11 +222,9 @@
             width: 100%;
         }
 
-        /* 왼쪽 패널 (컨트롤러) */
         .left-panel {
             flex: 0.8;
             background: #3e2723;
-            /* 칠판 색상 */
             border: 8px solid #8d6e63;
             border-radius: 15px;
             padding: 2vw;
@@ -266,11 +248,19 @@
             margin-top: 10px;
         }
 
-        .play-btn-grid {
+        /* [NEW] 버튼 그룹 스타일 수정 */
+        .btn-group-time {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-group-play {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
-            margin-top: 15px;
+            margin-top: 10px;
         }
 
         .time-btn {
@@ -291,10 +281,16 @@
             box-shadow: none;
         }
 
+        /* 전체 재생 버튼 (하얀색 베이스) */
+        .full-play-btn {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        /* 하이라이트 버튼 (오렌지색) */
         .highlight-btn {
             background: #ff6f00;
             color: white;
-            /* 놀토 오렌지 */
             box-shadow: 0 4px 0 #e65100;
         }
 
@@ -313,7 +309,6 @@
             height: 1.5em;
         }
 
-        /* 오른쪽 패널 (정답 영역) */
         .right-panel {
             flex: 1.2;
             position: relative;
@@ -331,7 +326,6 @@
             width: 70%;
             aspect-ratio: 1/1;
             background: #ffecb3;
-            /* 밝은 노란색 */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -358,7 +352,6 @@
             width: 150px;
             height: 35px;
             background: rgba(255, 255, 255, 0.4);
-            /* 테이프 느낌 */
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
@@ -394,7 +387,6 @@
             text-shadow: 2px 2px 0 #3e2723;
         }
 
-        /* 공통 버튼 */
         .nav-btn {
             background: #5d4037;
             color: #fff;
@@ -472,55 +464,52 @@
 
     <script>
         // =========================================================================
-        // ★ 데이터 영역 (전주 & 하이라이트 분리) ★
+        // ★ 데이터 영역 (안전한 ID로 교체됨) ★
         // =========================================================================
-        // introTime: 0 (전주부터 시작)
-        // highlightTime: 후렴구/클라이막스 시작 시간(초) - *직접 수정 필요*
-
         const quizData = {
             1: {
                 category: "전국민 떼창곡", questions: {
-                    10: { title: "아모르 파티", artist: "김연자", hint: "연애는 필수...", type: "전주 1초", youtubeId: "pD39o3tRq78", introTime: 0, highlightTime: 60 },
-                    20: { title: "붉은 노을", artist: "이문세", hint: "난 너를 사랑해~", type: "전주 1초", youtubeId: "h-g8r7R8j4E", introTime: 0, highlightTime: 67 },
-                    30: { title: "여행을 떠나요", artist: "조용필", hint: "메아리 소리가...", type: "전주 3초", youtubeId: "Qp0_Z8sUqT4", introTime: 0, highlightTime: 45 },
-                    40: { title: "잘못된 만남", artist: "김건모", hint: "빠른 랩", type: "전주 0.5초", youtubeId: "lE7K_sP19n4", introTime: 0, highlightTime: 82 },
-                    50: { title: "아파트", artist: "윤수일", hint: "으샤라 으샤", type: "전주 0.5초", youtubeId: "4S1M1Dq4dGM", introTime: 0, highlightTime: 50 }
+                    10: { title: "아모르 파티", artist: "김연자", hint: "연애는 필수...", type: "전주 1초", youtubeId: "o71z6nDktEI", introTime: 0, highlightTime: 42 },
+                    20: { title: "붉은 노을", artist: "이문세", hint: "난 너를 사랑해~", type: "전주 1초", youtubeId: "NfuELl2KZHM", introTime: 0, highlightTime: 31 },
+                    30: { title: "여행을 떠나요", artist: "조용필", hint: "메아리 소리가...", type: "전주 3초", youtubeId: "eGC5_DHWPh8", introTime: 0, highlightTime: 53 },
+                    40: { title: "잘못된 만남", artist: "김건모", hint: "빠른 랩", type: "전주 0.5초", youtubeId: "29kdLgJN_Ds", introTime: 0, highlightTime: 69 },
+                    50: { title: "아파트", artist: "윤수일", hint: "으샤라 으샤", type: "전주 0.5초", youtubeId: "mK7PZZj1cO4", introTime: 1, highlightTime: 35 }
                 }
             },
             2: {
                 category: "요즘 애들", questions: {
-                    10: { title: "Dynamite", artist: "BTS", hint: "영어 가사", type: "전주 1초", youtubeId: "gdZLi9oWNZg", introTime: 0, highlightTime: 50 },
-                    20: { title: "Love Dive", artist: "IVE", hint: "숨 참고...", type: "전주 1초", youtubeId: "Y8JFxS1HlDo", introTime: 0, highlightTime: 35 },
-                    30: { title: "으르렁", artist: "EXO", hint: "교복, 늑대", type: "전주 3초", youtubeId: "I3dezFzsNss", introTime: 0, highlightTime: 65 },
+                    10: { title: "Dynamite", artist: "BTS", hint: "영어 가사", type: "전주 1초", youtubeId: "KhZ5DCd7m6s", introTime: 1, highlightTime: 43 },
+                    20: { title: "Love Dive", artist: "IVE", hint: "숨 참고...", type: "전주 1초", youtubeId: "qYh3NhMRDjY", introTime: 0, highlightTime: 41 },
+                    30: { title: "으르렁", artist: "EXO", hint: "교복, 늑대", type: "전주 3초", youtubeId: "I3dezFzsNss", introTime: 0, highlightTime: 48 },
                     40: { title: "Ditto", artist: "뉴진스", hint: "허밍", type: "전주 1초", youtubeId: "Km71Rr9K-Bw", introTime: 0, highlightTime: 55 },
-                    50: { title: "Next Level", artist: "에스파", hint: "ㄷ자 춤", type: "전주 0.5초", youtubeId: "4TWR90KJl84", introTime: 0, highlightTime: 60 }
+                    50: { title: "Next Level", artist: "에스파", hint: "ㄷ자 춤", type: "전주 0.5초", youtubeId: "dly3BvtmXbA", introTime: 1, highlightTime: 43 }
                 }
             },
             3: {
                 category: "라떼는 (8090)", questions: {
-                    10: { title: "남행열차", artist: "김수희", hint: "비 내리는...", type: "전주 1초", youtubeId: "sxzD5sX4Ww0", introTime: 0, highlightTime: 40 },
-                    20: { title: "꿍따리 샤바라", artist: "클론", hint: "여름", type: "전주 1초", youtubeId: "K1sT3m3p8lM", introTime: 0, highlightTime: 55 },
-                    30: { title: "담다디", artist: "이상은", hint: "키다리 아저씨", type: "전주 2초", youtubeId: "B7hKk0kQGkE", introTime: 0, highlightTime: 45 },
-                    40: { title: "어쩌다 마주친 그대", artist: "송골매", hint: "강렬한 기타", type: "전주 1초", youtubeId: "7O7iQyFpYkY", introTime: 0, highlightTime: 30 },
-                    50: { title: "그대에게", artist: "무한궤도", hint: "대학가요제", type: "전주 1초", youtubeId: "Y50Q8H1bE_4", introTime: 23, highlightTime: 155 } // 그대에게는 전주가 김
+                    10: { title: "그대에게", artist: "무한궤도", hint: "대학가요제", type: "전주 1초", youtubeId: "gJqCO8E63-s", introTime: 1, highlightTime: 133 }, // 그대에게는 전주가 김
+                    20: { title: "어쩌다 마주친 그대", artist: "송골매", hint: "강렬한 기타", type: "전주 1초", youtubeId: "Jcfi9gOru6k", introTime: 1, highlightTime: 20 },
+                    30: { title: "남행열차", artist: "김수희", hint: "비 내리는...", type: "전주 1초", youtubeId: "t6J3SlDd2E8", introTime: 0, highlightTime: 21 },
+                    40: { title: "담다디", artist: "이상은", hint: "키다리 아저씨", type: "전주 2초", youtubeId: "FIgQCDWEjWc", introTime: 0, highlightTime: 15 },
+                    50: { title: "내 사랑 내 곁에", artist: "김현식", hint: "여름", type: "전주 1초", youtubeId: "gtOVozYocuw", introTime: 0, highlightTime: 116 }
                 }
             },
             4: {
                 category: "방구석 1열", questions: {
-                    10: { title: "Let It Go", artist: "겨울왕국", hint: "엘사", type: "전주 1초", youtubeId: "L0MK7qz13bU", introTime: 0, highlightTime: 125 },
-                    20: { title: "My Destiny", artist: "별그대", hint: "도민준", type: "전주 1초", youtubeId: "D07Q2k04uCU", introTime: 0, highlightTime: 60 },
-                    30: { title: "걱정말아요 그대", artist: "이적", hint: "지나간 것은...", type: "전주 3초", youtubeId: "Dic27EnDDls", introTime: 0, highlightTime: 190 },
-                    40: { title: "We All Lie", artist: "SKY 캐슬", hint: "전적으로...", type: "전주 1초", youtubeId: "A38M25f4kFk", introTime: 0, highlightTime: 65 },
-                    50: { title: "야인", artist: "야인시대", hint: "4딸라", type: "전주 1초", youtubeId: "N1S6G7xGqQo", introTime: 0, highlightTime: 55 }
+                    10: { title: "Let It Go", artist: "겨울왕국", hint: "엘사", type: "전주 1초", youtubeId: "moSFlvxnbgk", introTime: 1, highlightTime: 59 },
+                    20: { title: "My Destiny", artist: "별그대", hint: "도민준", type: "전주 1초", youtubeId: "UAehQTLXIiQ", introTime: 0, highlightTime: 74 },
+                    30: { title: "We All Lie", artist: "SKY 캐슬", hint: "전적으로...", type: "전주 1초", youtubeId: "PdDfuWJc9dA", introTime: 0, highlightTime: 1 },
+                    40: { title: "야인", artist: "야인시대", hint: "4딸라", type: "전주 1초", youtubeId: "WohwV1dedTc", introTime: 0, highlightTime: 8 },
+                    50: { title: "Stay With Me", artist: "도깨비", hint: "검", type: "전주 3초", youtubeId: "pcKR0LPwoYs", introTime: 0, highlightTime: 78 }
                 }
             },
             5: {
                 category: "흥 폭발", questions: {
-                    10: { title: "무조건", artist: "박상철", hint: "짜짜라...", type: "전주 1초", youtubeId: "vL7NlDoYmTU", introTime: 0, highlightTime: 50 },
-                    20: { title: "찐이야", artist: "영탁", hint: "엄지 척", type: "전주 1초", youtubeId: "pCsi5XF1cKQ", introTime: 0, highlightTime: 58 },
-                    30: { title: "DOC와 춤을", artist: "DJ DOC", hint: "관광버스", type: "전주 3초", youtubeId: "c2GgP0z_qQM", introTime: 0, highlightTime: 60 },
-                    40: { title: "사랑의 배터리", artist: "홍진영", hint: "당신이 짱", type: "전주 0.5초", youtubeId: "sS_x1F7X2tE", introTime: 0, highlightTime: 45 },
-                    50: { title: "테스형!", artist: "나훈아", hint: "세상이 왜 이래", type: "전주 0.5초", youtubeId: "dZ7zVpC3YwE", introTime: 0, highlightTime: 70 }
+                    10: { title: "무조건", artist: "박상철", hint: "짜짜라...", type: "전주 1초", youtubeId: "G_KNxk_q8PU", introTime: 0, highlightTime: 72 },
+                    20: { title: "찐이야", artist: "영탁", hint: "엄지 척", type: "전주 1초", youtubeId: "SiQzf2MyHl0", introTime: 0, highlightTime: 14 },
+                    30: { title: "DOC와 춤을", artist: "DJ DOC", hint: "관광버스", type: "전주 3초", youtubeId: "s3lzt08qGkw", introTime: 0, highlightTime: 75 },
+                    40: { title: "사랑의 배터리", artist: "홍진영", hint: "당신이 짱", type: "전주 0.5초", youtubeId: "GfMhBAhmkno", introTime: 1, highlightTime: 16 },
+                    50: { title: "테스형!", artist: "나훈아", hint: "세상이 왜 이래", type: "전주 0.5초", youtubeId: "MRrXRlVd0P0", introTime: 0, highlightTime: 70 }
                 }
             }
         };
@@ -558,14 +547,20 @@
             if (!isPlayerReady) { alert("플레이어 로딩 중입니다. 잠시만요!"); return; }
 
             const statusEl = document.getElementById(statusId);
-            if (statusEl) statusEl.innerText = (duration === 'full' ? "하이라이트 재생 중!" : duration + "초 듣기 중...");
+
+            // 상태 텍스트 업데이트
+            if (statusEl) {
+                if (duration === 'full') statusEl.innerText = "전체 재생 중...";
+                else if (duration === 'highlight') statusEl.innerText = "하이라이트 재생 중!";
+                else statusEl.innerText = duration + "초 재생 중...";
+            }
 
             stopVideo(statusId, false); // 텍스트 초기화 안 함
 
             player.loadVideoById({ videoId: youtubeId, startSeconds: startTime });
             setTimeout(() => { player.playVideo(); }, 100);
 
-            if (duration !== 'full') {
+            if (duration !== 'full' && duration !== 'highlight') {
                 currentTimer = setTimeout(() => {
                     player.pauseVideo();
                     if (statusEl) statusEl.innerText = "시간 종료!";
@@ -633,7 +628,6 @@
                     slide.id = `q-${col}-${score}`;
                     const statusId = `status-${col}-${score}`;
 
-                    // IntroTime과 HighlightTime이 없으면 기본값 처리
                     const intro = data.introTime !== undefined ? data.introTime : 0;
                     const highlight = data.highlightTime !== undefined ? data.highlightTime : 60;
 
@@ -645,19 +639,26 @@
                                 <div class="audio-wrapper">
                                     <div id="${statusId}" class="status-text"></div>
                                     
-                                    <p style="margin:5px 0; color:#bcaaa4; font-size:1.2vw;">[전주 듣기]</p>
-                                    <div class="play-btn-grid" style="margin-top:5px;">
-                                        <button class="time-btn" onclick="playSnippet('${data.youtubeId}', ${intro}, 0.5, '${statusId}')">0.5초</button>
+                                    <p style="margin:5px 0; color:#bcaaa4; font-size:1.2vw;">[음악 컨트롤]</p>
+                                    
+                                    <!-- 시간 조절 버튼 (1초, 2초, 3초) -->
+                                    <div class="btn-group-time">
                                         <button class="time-btn" onclick="playSnippet('${data.youtubeId}', ${intro}, 1, '${statusId}')">1초</button>
+                                        <button class="time-btn" onclick="playSnippet('${data.youtubeId}', ${intro}, 2, '${statusId}')">2초</button>
                                         <button class="time-btn" onclick="playSnippet('${data.youtubeId}', ${intro}, 3, '${statusId}')">3초</button>
                                     </div>
 
-                                    <div style="margin-top:20px;">
-                                        <button class="time-btn highlight-btn" style="width:100%;" onclick="playSnippet('${data.youtubeId}', ${highlight}, 'full', '${statusId}')">
-                                            <i class="fa-solid fa-star"></i> 하이라이트 재생
+                                    <!-- 전체 재생 & 하이라이트 -->
+                                    <div class="btn-group-play">
+                                        <button class="time-btn full-play-btn" onclick="playSnippet('${data.youtubeId}', ${intro}, 'full', '${statusId}')">
+                                            <i class="fa-solid fa-play"></i> 전체 재생
                                         </button>
-                                        <button class="time-btn stop-btn" onclick="stopVideo('${statusId}')">정지</button>
+                                        <button class="time-btn highlight-btn" onclick="playSnippet('${data.youtubeId}', ${highlight}, 'highlight', '${statusId}')">
+                                            <i class="fa-solid fa-star"></i> 하이라이트
+                                        </button>
                                     </div>
+                                    
+                                    <button class="time-btn stop-btn" onclick="stopVideo('${statusId}')">정지</button>
                                 </div>
                             </div>
                             
@@ -702,4 +703,3 @@
 </body>
 
 </html>
-
